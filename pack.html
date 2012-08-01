@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+#wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+#pack div {
+    position: absolute;
+}
+#pack .pack {
+    border: 1px solid #9C52FF;
+}
+#pack .empty {
+    border: 1px solid rgb(200, 200, 200);
+}
+#pack .infinite {
+    border-bottom: none;
+    height: 100px;
+}
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="pack"></div>
+        </div>
+        <script>var module = {};</script>
+        <script src="boxpack.js"></script>
+        <script>
+function Bin(opts) {
+    this.width = opts.width;
+    this.rects = [];
+    this.empty_rects = [
+        {x: 0, y: 0, width: this.width, height: Infinity}
+    ];
+    this.draw();
+}
+
+/**
+ * @param {Rect} rect
+ * @return {Boolean}
+ */
+Bin.prototype.pack = function (rect) {
+    var pack = false;
+
+    /* Fit into an empty box */
+    this.empty_rects.some(function (fit) {
+        if (boxpack.rectFit(rect, fit)) {
+            pack = fit;
+            return true;
+        }
+        return false;
+    });
+
+    if (!pack) {
+        return false;
+    }
+
+    /* Pack new box */
+    var box = {x: pack.x, y: pack.y, width: rect.width, height: rect.height};
+    this.rects.push(box);
+
+    /* Divide up packed area */
+    var new_boxes = [];
+
+    this.empty_rects.forEach(function (fit) {
+        if (!boxpack.intersect(box, fit)) {
+            return new_boxes.push(fit);
+        }
+        new_boxes = new_boxes.concat(boxpack.subtract(box, fit));
+    });
+
+    this.empty_rects = new_boxes.sort(function (a, b) {
+        return (
+            (Math.pow(a.x, 2) + Math.pow(a.y, 2)) -
+            (Math.pow(b.x, 2) + Math.pow(b.y, 2))
+        );
+    });
+
+    this.draw();
+};
+
+Bin.prototype.draw = function () {
+    var html = '';
+    this.rects.forEach(function (rect) {
+        html += (
+            '<div class="pack" style="' +
+            'left:' + rect.x + 'px;' +
+            'top:' + rect.y + 'px;' +
+            'width:' + (rect.width - 2) + 'px;' +
+            'height:' + (rect.height - 2) + 'px"></div>'
+        );
+    });
+    this.empty_rects.forEach(function (rect, index) {
+        // Remove 2 from width & height for border
+        if (rect.height === Infinity) {
+            return html += (
+                '<div class="empty infinite" style="' +
+                'left:' + rect.x + 'px;' +
+                'top:' + rect.y + 'px;' +
+                'width:' + (rect.width - 2) + 'px;" ' +
+                'data-sort="' + index + '"></div>'
+            );
+        }
+        html += (
+            '<div class="empty" style="' +
+            'left:' + rect.x + 'px;' +
+            'top:' + rect.y + 'px;' +
+            'width:' + (rect.width - 2) + 'px;' +
+            'height:' + (rect.height - 2) + 'px" ' +
+            'data-sort="' + index + '"></div>'
+        );
+    });
+    document.getElementById('pack').innerHTML = html;
+};
+
+var bin = new Bin({width: 640});
+
+var counter = 0;
+
+(function next() {
+    counter += 1;
+    if (counter === 50) {
+        return;
+    }
+    bin.pack({
+        width: 10 + Math.floor(Math.random() * 90),
+        height: 10 + Math.floor(Math.random() * 90)
+    });
+    setTimeout(next, 50);
+}());
+        </script>
+    </body>
+</html>
