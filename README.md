@@ -23,8 +23,6 @@ Tested to work against Internet Explorer 6+, Safari 3+, Google Chrome 1+, Firefo
 * `boxpack.divideY({Box}, {Number}) -> {Array {Box}}`
 * `boxpack.subtract({Box}, {Box}) -> {Array {Box}}`
 
-### Thoughts
+## License
 
-It should be possible to macro Self methods in-place (only in Node.js), thus
-removing the overhead of wrapping every method.  If anyone is interested in
-this, please let me know and we can investigate it!
+MIT
