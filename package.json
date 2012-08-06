@@ -18,6 +18,8 @@
   ],
   "author": "Ryan Munro",
   "license": "BSD",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "tap": "~0.3.0"
   }
 }

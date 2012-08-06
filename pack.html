@@ -4,7 +4,7 @@
         <style>
 #wrapper {
     position: absolute;
-    top: 10px;
+    top: 30px;
     left: 10px;
 }
 #pack div {
@@ -14,7 +14,7 @@
     border: 1px solid #9C52FF;
 }
 #pack .empty {
-    border: 1px solid rgb(200, 200, 200);
+    border: 1px solid rgb(220, 220, 220);
 }
 #pack .infinite {
     border-bottom: none;
@@ -23,12 +23,18 @@
         </style>
     </head>
     <body>
+        <div id="stats">
+            <b>positive</b> <span id="positive">0</span> —
+            <b>negative</b> <span id="negative">1</span>
+        </div>
         <div id="wrapper">
             <div id="pack"></div>
         </div>
         <script>var module = {};</script>
         <script src="boxpack.js"></script>
         <script>
+var positive = document.getElementById('positive');
+var negative = document.getElementById('negative');
 function Bin(opts) {
     this.width = opts.width;
     this.rects = [];
@@ -63,20 +69,22 @@ Bin.prototype.pack = function (rect) {
     this.rects.push(box);
 
     /* Divide up packed area */
-    var new_boxes = [];
+    var touched = [];
 
-    this.empty_rects.forEach(function (fit) {
+    var untouched = this.empty_rects.filter(function (fit) {
         if (!boxpack.intersect(box, fit)) {
-            return new_boxes.push(fit);
+            return true;
         }
-        new_boxes = new_boxes.concat(boxpack.subtract(box, fit));
+        touched = touched.concat(boxpack.subtract(box, fit));
+        return false;
     });
 
-    this.empty_rects = new_boxes.sort(function (a, b) {
-        return (
-            (Math.pow(a.x, 2) + Math.pow(a.y, 2)) -
-            (Math.pow(b.x, 2) + Math.pow(b.y, 2))
-        );
+    var sorted = touched.concat(untouched).sort(boxpack.algo.left);
+
+    this.empty_rects = sorted.filter(function (a) {
+        return sorted.every(function (b) {
+            return a === b || !boxpack.boxFit(a, b)
+        });
     });
 
     this.draw();
@@ -84,6 +92,7 @@ Bin.prototype.pack = function (rect) {
 
 Bin.prototype.draw = function () {
     var html = '';
+    positive.innerHTML = this.rects.length;
     this.rects.forEach(function (rect) {
         html += (
             '<div class="pack" style="' +
@@ -93,6 +102,7 @@ Bin.prototype.draw = function () {
             'height:' + (rect.height - 2) + 'px"></div>'
         );
     });
+    negative.innerHTML = this.empty_rects.length;
     this.empty_rects.forEach(function (rect, index) {
         // Remove 2 from width & height for border
         if (rect.height === Infinity) {
@@ -120,16 +130,31 @@ var bin = new Bin({width: 640});
 
 var counter = 0;
 
-(function next() {
-    counter += 1;
-    if (counter === 50) {
-        return;
-    }
-    bin.pack({
+var boxes = [];
+
+for (var i = 0; i < 100; i += 1) {
+    boxes.push({
         width: 10 + Math.floor(Math.random() * 90),
         height: 10 + Math.floor(Math.random() * 90)
     });
-    setTimeout(next, 50);
+}
+
+boxes.sort(function (a, b) {
+    //return (b.width * b.height) - (a.width * a.height);
+    var sort = b.width - a.width;
+    if (sort !== 0) {
+        return sort;
+    }
+    return a.height - b.height;
+});
+
+(function next() {
+    counter += 1;
+    if (counter === boxes.length) {
+        return;
+    }
+    bin.pack(boxes[counter]);
+    setTimeout(next, 5);
 }());
         </script>
     </body>

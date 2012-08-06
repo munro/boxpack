@@ -1,3 +1,5 @@
+'use strict';
+
 var test = require('tap').test,
     boxpack = require('./');
 
@@ -12,21 +14,26 @@ function boxListSort(list) {
 }
 
 function boxListEq(t, a, b) {
-    var i;
-    t.equal(a.length, b.length, 'lists are equal');
     a = boxListSort(a);
     b = boxListSort(b);
-    for (i = 0; i < a.length; i += 1) {
-        t.equal(a[i].x, b[i].x, 'list#' + i + '.x are equal');
-        t.equal(a[i].y, b[i].y, 'list#' + i + '.y are equal');
-        t.equal(a[i].width, b[i].width, 'list#' + i + '.width are equal');
-        t.equal(a[i].height, b[i].height, 'list#' + i + '.height are equal');
-    }
+    t.deepEqual(a, b, 'box lists are equal');
 }
 
 test('boxpack#rectFit', function (t) {
     t.ok(boxpack.rectFit(
         {width: 100, height: 70},
+        {x: 300, y: 0, width: 338, height: Infinity}
+    ));
+    t.end();
+});
+
+test('boxpack#boxFit', function (t) {
+    t.ok(boxpack.boxFit(
+        {x: 310, y: 1337, width: 328, height: 31337},
+        {x: 300, y: 0, width: 338, height: Infinity}
+    ));
+    t.notOk(boxpack.boxFit(
+        {x: 310, y: 1337, width: 329, height: 31337},
         {x: 300, y: 0, width: 338, height: Infinity}
     ));
     t.end();
@@ -128,6 +135,26 @@ test('boxpack#subtract', function (t) {
         {x: 5, y: 0, width: 10, height: 5},
         {x: 10, y: 0, width: 5, height: 15},
         {x: 5, y: 10, width: 10, height: 5}
+    ]);
+    t.end();
+});
+
+test('boxpack#pack', function (t) {
+    var bin = boxpack();
+    t.deepEqual(
+        bin.pack({width: 100, height: 200}),
+        {x: 0, y: 0, width: 100, height: 200}
+    );
+    t.deepEqual(
+        bin.pack({width: 100, height: 200}),
+        {x: 100, y: 0, width: 100, height: 200}
+    );
+    t.deepEqual(bin.pack([
+        {width: 100, height: 200},
+        {width: 100, height: 200}
+    ]), [
+        {x: 200, y: 0, width: 100, height: 200},
+        {x: 0, y: 200, width: 100, height: 200}
     ]);
     t.end();
 });
