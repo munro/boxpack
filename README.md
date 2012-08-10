@@ -4,25 +4,27 @@ Bin packing algorithm!
 
 ## Example
 
-    var bin = boxpack();
+```javascript
+var bin = boxpack();
 
-    var boxes = bin.pack([
-        {width: 50, height: 100},
-        {width: 75, height: 75},
-        {width: 25, height: 25},
-        {width: 100, height: 100}
-    ]);
+var boxes = bin.pack([
+    {width: 50, height: 100},
+    {width: 75, height: 75},
+    {width: 25, height: 25},
+    {width: 100, height: 100}
+]);
 
-    document.getElementById('result').innerHTML = boxes.map(function (box) {
-        return '<div style="' +
-            'position:absolute;' +
-            'border:1px solid black;' +
-            'left:' + box.x + 'px;' +
-            'top:' + box.y + 'px;' +
-            /* subtract border from width & height */
-            'width:' + (box.width - 2) + 'px;' +
-            'height:' + (box.height - 2) + 'px"></div>';
-    }).join('');
+document.getElementById('result').innerHTML = boxes.map(function (box) {
+    return '<div style="' +
+        'position:absolute;' +
+        'border:1px solid black;' +
+        'left:' + box.x + 'px;' +
+        'top:' + box.y + 'px;' +
+        /* subtract border from width & height */
+        'width:' + (box.width - 2) + 'px;' +
+        'height:' + (box.height - 2) + 'px"></div>';
+}).join('');
+```
 
 ## Downloads
 
