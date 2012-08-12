@@ -26,14 +26,6 @@ document.getElementById('result').innerHTML = boxes.map(function (box) {
 }).join('');
 ```
 
-## Downloads
-
-Tested to work against Internet Explorer 6+, Safari 3+, Google Chrome 1+, Firefox 3+, and Opera 10+!
-
-[Development Version (0.0.0)](https://raw.github.com/munro/boxpack/master/boxpack.js) — 6.5 KiB, uncompressed with comments.
-
-[Production Version (0.0.0)](https://raw.github.com/munro/boxpack/master/boxpack.min.js) — 715 bytes, minified and gzipped.
-
 ## Data structures
 
 ### {Rect} `{width: {Number}, height: {Number}}`

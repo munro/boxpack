@@ -36,6 +36,7 @@ function boxpack(opts) {
         width: opts.width || Infinity,
         height: opts.height || Infinity
     }];
+    self.algo = opts.algo || boxpack.algo.dist;
     return self;
 }
 
@@ -92,15 +93,9 @@ boxpack.prototype = {
         });
 
         /**
-         * Sort empty boxes by distance to top left corner, keeping boxes
-         * concentrated in one area
+         * Sort based on weighting algorithm.
          */
-        var sorted = new_empty.sort(function (a, b) {
-            return (
-                (Math.pow(a.x, 2) + Math.pow(a.y, 2)) -
-                (Math.pow(b.x, 2) + Math.pow(b.y, 2))
-            );
-        });
+        var sorted = new_empty.sort(self.algo);
 
         this._empty = sorted.filter(function (a) {
             return sorted.every(function (b) {
